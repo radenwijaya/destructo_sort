@@ -39,7 +39,7 @@
 	/*
 	 * No need to sort, actually
 	 */
-	ksort($bitshift);
+//	ksort($bitshift);
 	
 	function digit_storage(int $x, &$storage)
 	/*
