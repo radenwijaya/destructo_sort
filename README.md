@@ -17,4 +17,4 @@ And yes, I cheated a bit by making it numerical string instead of just storing n
 
 To be honest I don't know where or when or what kind of usage that is suitable for this algorithm.  If you needed this, just feel free to use it.
 
-Just to add a note, to save memory, please don't load data from file to an array before sorting.  Instead, just store the value in it's datastructure and then call output_recursive. Some modification will be required.
+Just to add a note, to save memory, please don't load data from file to an array before sorting.  Instead, just store the value in it's datastructure and then call output_recursive to get your output data. Some modification to the source code will be required however.
