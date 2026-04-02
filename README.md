@@ -83,6 +83,11 @@ Instead:
 
 (Some modifications to the source code may be required.)
 
+
+## Key idea
+
+Instead of comparing elements, this algorithm groups values by their digits and progressively organizes them using a tree-like structure. This reduces dependence on log n and replaces it with log M.
+
 To be honest this is not a general-purpose sorting algorithm, but it can significantly outperform traditional approaches in the right conditions. 
 
 Contributions, feedback, and use cases are welcome.
