@@ -1,20 +1,88 @@
 # destructo_sort
-sorting algorithm for numerical string with complexity of O(n log M) 
 
-N is the number of data while M is the 'value' of the numerical string.
+I built this for fun, but the results were interesting enough to share.  
 
-I have no idea if someone else wrote the concept of this algorithm before, but at least this is my original implementation of destructive sorting algorithm.
+A low-memory, data-dependent sorting algorithm for bounded numeral string ranges with complexity O(n log M).
 
-Most sorting algorithm works on the orirginal data array, but this algorithm, ditched the original array and used only the data.  Hence, destructive if using array_pop, and data is stored in a tree structure, sorted.  Then afterward will output the data in a sorted manner.
+Where:
+- n = number of elements
+- M = maximum value (or digit length)
 
-I've compared this sorting algorithm to QuickSort from https://zetcode.com/php/quick-sort/, RadixSort from https://zetcode.com/php/radix-sort/ and PHP's default sort function.  
+This algorithm differs from traditional comparison-based sorting by leveraging the internal structure of numeric values (digits). Instead of comparing elements directly, it organizes data into a tree-like structure and outputs them in sorted order.
 
-The result is pretty promising and consistent with O(n log M)
+It is particularly efficient when:
+- n is large
+- M is relatively small
 
-This algorithm requires premade - modified BitShift table to help the sorting process, and it worked pretty well.
+This is my original implementation of a destructive sorting algorithm, although similar ideas may already exist.
 
-And yes, I cheated a bit by making it numerical string instead of just storing numbers as Integer.
+I compared this algorithm against:
+- QuickSort from https://zetcode.com/php/quick-sort/  
+- RadixSort from https://zetcode.com/php/radix-sort/  
+- PHP's built-in `sort()` function
 
-To be honest I don't know where or when or what kind of usage that is suitable for this algorithm.  If you needed this, just feel free to use it.
+## Benchmark 1
+N = 1,000,000, M = 10,000
 
-Just to add a note, to save memory, please don't load data from file to an array before sorting.  Instead, just store the value in it's datastructure and then call output_recursive to get your output data. Some modification to the source code will be required however.
+Destructo Sort: 0.80s  
+PHP sort():     1.79s  
+Radix Sort:     3.59s  
+QuickSort:      6.99s
+
+## Benchmark 2
+N = 100,000, M = 10,000
+
+Destructo Sort: 0.07s  
+PHP sort():     0.11s  
+Radix Sort:     0.29s  
+QuickSort:      0.32s
+
+## Benchmark 3
+N = 1,000,000, M = 1,000
+
+Destructo Sort: 0.52s  
+PHP sort():     1.43s  
+Radix Sort:     DNF  
+QuickSort:      27.85s
+
+## Benchmark 4
+N = 1,000,000, M = 100
+
+Destructo Sort: 0.45s  
+PHP sort():     1.32s  
+Radix Sort:     DNF  
+QuickSort:      DNF
+
+The result is promising and consistent with O(n log M)
+
+This algorithm requires premade - modified BitShift table as the sorting template and consistently references to it..
+
+## When to use
+
+This algorithm performs best when:
+- The dataset size (n) is large
+- The value range (M) is relatively small or bounded
+- Memory usage is a concern
+- Data can be processed in a streaming or incremental manner
+
+## When NOT to use
+
+- When values have a very large range (large M)
+- When a stable sort is required
+- When general-purpose sorting is sufficient
+
+Contributions, feedback, and use cases are welcome.
+
+## Notes
+
+To minimize memory usage, avoid loading all data into an array before sorting.
+
+Instead:
+- insert values directly into the data structure  
+- then call `output_recursive` to retrieve sorted output  
+
+(Some modifications to the source code may be required.)
+
+To be honest this is not a general-purpose sorting algorithm, but it can significantly outperform traditional approaches in the right conditions. 
+
+Contributions, feedback, and use cases are welcome.
