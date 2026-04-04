@@ -111,7 +111,7 @@ This behavior is consistent with:
 
 ## Notes
 This algorithm requires premade - modified BitShift table as the sorting template and consistently references to it.
-- Current implementation supports characters 'a' to 't'
+- Current implementation with K=20 supports characters 'a' to 't'
 - Full lowercase (`a–z`) is theoretically possible but requires extremly powerful computer
 - Full mixed-case alphabet or alphanumeric requires **ungodly amount of memory**
 
