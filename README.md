@@ -70,7 +70,7 @@ When M is small, log M < log n, giving a clear advantage.
 
 ## Notes
 This algorithm requires premade - modified BitShift table as the sorting template and consistently references to it.
-- Table size is manageable for numeric domains
+- Table size is manageable for numeric domains (K=10)
 - Performance improves as n grows
 
 # Part 2: d_sort_str.php
