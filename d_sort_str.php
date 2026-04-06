@@ -1,12 +1,13 @@
 <?php
 	error_reporting(E_ALL); ini_set("display_errors", 1);
-
-	$bitshift = [];
+	set_time_limit(120);
+	
 	$magnitude_bitshift = [];
 	
 	define('numbers', [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]);
-	define('orders', ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j','k', 'l', 'm', 
-		'n', 'o', 'p', 'q', 'r', 's', 't', /*'u', 'v', 'w', 'x', 'y', 'z'*/]);
+	define('orders', [' ',
+					  'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j','k', 'l', 'm', 
+					  'n', 'o', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z',]);
 	define('f_orders', array_flip(orders));
 	define('order_count', count(orders));
 
@@ -54,20 +55,12 @@
 	}
 	
 	$bs_array=[];
-	$time=microtime(true);
-	
-	bitshift_generator($bs_array, 0, 0, orders, order_count, $bitshift);	
-	echo('Bitshift Generator');
-	echo("<BR>Entropy: ".count($bitshift));
-	echo(' Time: '.microtime(true) - $time);
 
-	bitshift_generator($bs_array, 0, 0, numbers, count(numbers), $magnitude_bitshift);	
-	
 	/*
-	 * No need to sort, actually
+	 * Generating text length magnitude
 	 */
-//	ksort($bitshift);
-	
+	bitshift_generator($bs_array, 0, 0, numbers, count(numbers), $magnitude_bitshift);	
+		
 	function digit_storage($x, &$storage)
 	/*
 	 * This will store digit 0 to 9 into digit storage array
@@ -108,6 +101,8 @@
 	function store_recursive($digits, $depth, $cnt, &$storage)
 	/*
 	 * Store and prepare the data structure
+	 * 
+	 * recursive 
 	 */
 	{		
 		if ($depth<$cnt-1)
@@ -126,10 +121,9 @@
 	/*
 	 * This function will number in storage.  In theory, any number
 	 * 
-	 * Non recurrsive
+	 * Non recursive
 	 */
 	{
-//		$digits=''.$x;
 		$cnt=strlen($digits);
 					
 		if (!isset($structure[$cnt]))
@@ -138,6 +132,49 @@
 		store_recursive($digits, 0, $cnt, $structure[$cnt]);	
 	}
 	
+	function show_orders_1($value)
+	/*
+	 * This will do bitshift without table and returns bitshift array
+	 */
+	{		
+		for ($i=0; $i<order_count; $i++)
+		{			
+			if ($value & 1)
+			{				
+				yield orders[$i];
+			}
+			else 
+				if ($value==0)
+				{
+					break;
+				}
+			
+			$value=$value >> 1;			
+		}
+	}
+	
+	function show_orders_2($value)
+	/*
+	 * Same thing as above, but needs to be tested to check the speed. 
+	 */
+	{
+		$j=1;
+		for ($i=0; $i<order_count; $i++)
+		{
+			if ($value & $j)
+			{
+				yield orders[$i];
+			}
+			else
+				if ($j>$value)
+				{
+					break;
+				}
+			
+			$j=$j+$j;
+		}
+	}	
+		
 	function digit_output($storage)
 	/*
 	 * This will check storage[10] and use bitshift to output sorted result
@@ -145,9 +182,7 @@
 	 * best used with yield method
 	 */
 	{
-		global $bitshift;
-		
-		foreach ($bitshift[$storage[order_count]] as $value)
+		foreach (show_orders_1($storage[order_count]) as $value)
 		{			
 			for ($i=0; $i<$storage[$value]; $i++)
 				yield $value;
@@ -156,11 +191,9 @@
 	
 	function output_recursive($storage, $v, $depth, &$output)
 	{
-		global $bitshift;
-		
 		if ($depth>1)	
 		{
-			foreach ($bitshift[$storage[order_count]] as $value)
+			foreach (show_orders_1($storage[order_count]) as $value)
 			{	
 				output_recursive($storage[$value], $v.$value, $depth-1, $output);				
 			}
@@ -195,14 +228,11 @@
 		
 	$input=[];
 	
-/*	$n=100000;
-	$m=100;
-	for ($i=0; $i<$n; $i++)
-		$input[]=''.rand(0, $m);*/
 	$m=4;
-	$n=100000;
+	$n=10000000;
 	$input=input_maker($n, $m);
-				
+	
+	echo("Destuctive Sort Without Bitshift");
 	echo("<BR>N: ".$n." M: ".$m);
 	
 	$time=microtime(true);
@@ -217,64 +247,6 @@
 	echo("<BR>PHP Sort ");
 	echo('Time: '.(microtime(true) - $time));
 	
-	function quickSortOptimized(array &$array, int $low, int $high): void
-	//https://zetcode.com/php/quick-sort/
-	{
-		if ($low < $high) {
-			$pi = partition($array, $low, $high);
-			
-			quickSortOptimized($array, $low, $pi - 1);
-			quickSortOptimized($array, $pi + 1, $high);
-		}
-	}
-	
-	function partition(array &$array, int $low, int $high): int {
-		$pivot = $array[$high];
-		$i = $low - 1;
-		
-		for ($j = $low; $j <= $high - 1; $j++) {
-			if ($array[$j] < $pivot) {
-				$i++;
-				[$array[$i], $array[$j]] = [$array[$j], $array[$i]];
-			}
-		}
-		
-		[$array[$i + 1], $array[$high]] = [$array[$high], $array[$i + 1]];
-		return $i + 1;
-	}
-	
-	$time=microtime(true);
-	$quicksort=$input;	
-	quickSortOptimized($quicksort, 0, count($input) - 1);
-	
-	echo("<BR>QuickSort ");
-	echo('Time: '.(microtime(true) - $time));
-	/*
-	function radixSort(array $arr): array
-	//https://zetcode.com/php/radix-sort/
-	{
-		$maxDigits = max(array_map('strlen', array_map('strval', $arr)));
-		
-		for ($digit = 0; $digit < $maxDigits; $digit++) {
-			$buckets = array_fill(0, 10, []);
-			
-			foreach ($arr as $num) {
-				$digitVal = (int) (($num / (10 ** $digit)) % 10);
-				$buckets[$digitVal][] = $num;
-			}
-			
-			$arr = array_merge(...$buckets);
-		}
-		
-		return $arr;
-	}
-
-	$time=microtime(true);
-	$radixsort=$input;
-	radixSort($radixsort);
-	echo("<BR>Radixsort ");
-	echo('Time: '.microtime(true) - $time);
-*/		
 	/*
 	 * Proofing Ground
 	 */
