@@ -138,21 +138,21 @@ Performance is sensitive to K (alphabet size), which acts as a constant multipli
 ## Benchmark 1
 N = 100,000, M = 4
 
-Destructo (Original):   0.11s
+Destructo (Original):   0.11s  
 Destructo Sort (K=20):  0.14s  
 Destructo Sort (K=26):  0.14s  
 
 ## Benchmark 2
 N = 1,000,000, M = 4, K=20
 
-Destructo (Original):   0.86s
+Destructo (Original):   0.86s  
 Destructo Sort (K=20):  0.88s  
 Destructo Sort (K=26):  1.22s  
 
 ## Benchmark 3
 N = 10,000,000, M = 4, K=20
 
-Destructo (Original):   8.27s 
+Destructo (Original):   8.27s  
 Destructo Sort (K=20):  8.58s  
 Destructo Sort (K=26):  9.63s  
 
