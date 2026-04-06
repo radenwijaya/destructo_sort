@@ -73,10 +73,11 @@ This algorithm requires premade - modified BitShift table as the sorting templat
 - Table size is manageable for numeric domains (K=10)
 - Performance improves as n grows
 
-# Part 2: d_sort_str.php
-A low-memory, data-dependent sorting algorithm for fixed-length lowercase strings with near-linear complexity:
+# Part 2: d_sort_str_ori.php
+The original low-memory, data-dependent sorting algorithm for fixed-length lowercase strings with near-linear complexity:
   O(n · L) ≈ O(n)
 Where:
+- n = number of elements
 - L = string length (fixed)
 
 ## Benchmark 1
@@ -112,7 +113,7 @@ This behavior is consistent with:
 ## Notes
 This algorithm requires premade - modified BitShift table as the sorting template and consistently references to it.
 - Current implementation with K=20 supports characters 'a' to 't'
-- Full lowercase (`a–z`) is theoretically possible but requires extremly powerful computer
+- Full lowercase (`a–z`) is theoretically possible but requires extremely powerful computer
 - Full mixed-case alphabet or alphanumeric requires **ungodly amount of memory**
 
 ## How it works
@@ -121,6 +122,58 @@ This algorithm uses a **precomputed BitShift routing table** to eliminate compar
 Instead of comparing letter or number:
 - input is encoded into a compact structural representation  
 - routing table determines ordering  
+- output is reconstructed in sorted order
+
+# Part 3: d_sort_str.php
+An even lower-memory, data-dependent sorting algorithm for fixed-length lowercase strings with near-linear complexity:
+  O(n · L · K) ≈ O(n)
+Where:
+- n = number of elements
+- L = string length (fixed)
+- K = domain size
+
+This version trades performance loss for massive gains in scalability and flexibility.
+Performance is sensitive to K (alphabet size), which acts as a constant multiplier.
+
+## Benchmark 1
+N = 100,000, M = 4
+
+Destructo (Original):   0.11s
+Destructo Sort (K=20):  0.14s  
+Destructo Sort (K=26):  0.14s  
+
+## Benchmark 2
+N = 1,000,000, M = 4, K=20
+
+Destructo (Original):   0.86s
+Destructo Sort (K=20):  0.88s  
+Destructo Sort (K=26):  1.22s  
+
+## Benchmark 3
+N = 10,000,000, M = 4, K=20
+
+Destructo (Original):   8.27s 
+Destructo Sort (K=20):  8.58s  
+Destructo Sort (K=26):  9.63s  
+
+## Observations
+- At small input sizes, the original version is faster due to lower constant overhead
+- At medium scale (~1M), performance is still comparable.
+- At large scale (10M+), original Destructo Sort is slightly faster
+- Original destructo sort requires 0.8s of BitShift table preparation
+- Increasing K to 26 (full lowercase alphabet), introduces a linear performance cost with respect to K
+
+## Notes
+This version does not require a precomputed BitShift table, reducing memory usage significantly
+- Current implementation with K=27 supports characters 'a' to 'z' and space ' '
+- Full upper and lower case alpha-numeric (K=63) is possible at additional performance cost
+
+## How it works
+This algorithm uses a **binary-encoded routing via bit operations** to eliminate comparisons.
+
+Instead of comparing letter or number:
+- input is encoded as an integer representation
+- bit patterns are used to determine relative ordering
 - output is reconstructed in sorted order
 
 ## When to use
@@ -147,7 +200,7 @@ Instead:
 Instead of comparing elements, this algorithm groups values by their digits and progressively organizes them using a tree-like structure. This reduces dependence on log n and replaces it with log M.
 
 ## Final thoughts
-This is not a general-purpose sorting algorithm.
+This is not a general-purpose sorting algorithm, this work explores the trade-off between precomputation (time vs memory) and on-the-fly computation (time vs flexibility).
 
 But in the right conditions, it can significantly outperform traditional approaches.
 
